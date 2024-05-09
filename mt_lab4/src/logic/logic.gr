@@ -1,0 +1,41 @@
+grammar Logic;
+
+start S;
+
+S return logic.Tree : E SPrime [ {new logic.Tree("S", e, sPrime)} ];
+
+SPrime return logic.Tree :
+    IMPL E SPrime [ {new logic.Tree("S'", new logic.Tree(IMPL.name()), e, sPrime)} ]
+    | EPS [ {new logic.Tree("S'", new logic.Tree("Eps"))} ];
+
+E return logic.Tree : T EPrime [ {new logic.Tree("E", t, ePrime)} ];
+
+EPrime return logic.Tree :
+    OR T EPrime [ {new logic.Tree("E'", new logic.Tree(OR.name()), t, ePrime)} ]
+    | EPS [ {new logic.Tree("E'", new logic.Tree("Eps"))} ];
+
+T return logic.Tree : F TPrime [ {new logic.Tree("T", f, tPrime)} ];
+
+TPrime return logic.Tree :
+    XOR F TPrime [ {new logic.Tree("T'", new logic.Tree(XOR.name()), f, tPrime)} ]
+    | EPS [ {new logic.Tree("T'", new logic.Tree("Eps"))} ];
+
+F return logic.Tree : P FPrime [ {new logic.Tree("F", p, fPrime)} ];
+
+FPrime return logic.Tree :
+    AND P FPrime [ {new logic.Tree("F'", new logic.Tree(AND.name()), p, fPrime)} ]
+    | EPS [ {new logic.Tree("F'", new logic.Tree("Eps"))} ];
+
+P return logic.Tree : VAR [ {new logic.Tree("P", new logic.Tree(VAR.name()))} ]
+                | LPAREN E RPAREN [ {new Tree("P",  new logic.Tree(lparen), e, new logic.Tree(rparen))} ]
+                | NOT P [ {new logic.Tree("P", new logic.Tree(NOT.name()), p)} ];
+
+IMPL   : "->";
+AND    : "and";
+OR     : "or";
+XOR    : "xor";
+NOT    : "not";
+LPAREN : "(";
+RPAREN : ")";
+VAR    : '[a-z]';
+-> '[ \t\n\r]';

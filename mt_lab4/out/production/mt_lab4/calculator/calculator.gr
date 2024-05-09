@@ -1,0 +1,27 @@
+grammar Calculator;
+
+start E;
+
+E return double : T EPrime(t) [ EPrime ];
+
+EPrime(double num) return double : PLUS T EPrime(res) {double res = num + t} [ EPrime ]
+                                 | MINUS T EPrime(res) {double res = num - t} [ EPrime ]
+                                 | EPS [ {num} ];
+
+T return double : F TPrime(f) [ TPrime ];
+
+TPrime(double num) return double : MUL F TPrime(res) {double res = num * f} [ TPrime ]
+                                 | DIV F TPrime(res) {double res = num / f} [ TPrime ]
+                                 | EPS [ {num} ];
+
+F return double : NUMBER [ {Double.parseDouble(number)} ]
+                | LPAREN E RPAREN [ E ];
+
+PLUS   : "+";
+MINUS  : "-";
+MUL    : "*";
+DIV    : "/";
+LPAREN : "(";
+RPAREN : ")";
+NUMBER : '[0-9.]+';
+-> '[ \t\n\r]';
